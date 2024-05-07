@@ -55,7 +55,6 @@ public class ProductDB {
     private BigDecimal price;
 
     @Column(name = "TYPE_STATUS")
-
     @Enumerated(EnumType.STRING)
     @EqualsAndHashCode.Exclude
     private TypeStatus typeStatus;
@@ -67,14 +66,6 @@ public class ProductDB {
     @NotNull
     private static UUID nextId() {
         return UlidCreator.getMonotonicUlid().toUuid();
-    }
-
-    public void mergeQuantity(Integer remove) {
-        this.quantity = this.quantity - remove;
-    }
-
-    public boolean hasStorage() {
-        return this.quantity > 0;
     }
 
     public void updateFrom(ProductEditFormDto productFormEditDto) {

@@ -52,8 +52,7 @@ public class ProductUseCaseImpl extends AbstractProductUserCase implements Produ
         validateQuantity(productFormEditDto.getQuantity());
         validatePrice(productFormEditDto.getPrice());
 
-        ProductDB productDB = Optional.ofNullable(productGateway.findById(productFormEditDto.getId()))
-                .orElseThrow(() -> new ProductNotFoundException(productFormEditDto.getId()));
+        ProductDB productDB = productGateway.findById(productFormEditDto.getId());
 
         productDB.updateFrom(productFormEditDto);
 
@@ -83,11 +82,12 @@ public class ProductUseCaseImpl extends AbstractProductUserCase implements Produ
     public ProductDto remove(UUID id) throws InvalidProductsProcessException {
         ProductDB productDB = productGateway.findById(id);
 
-        if(productDB == null){
-            throw new ProductNotFoundException(id);
-        }
-
         logger.info("[Remove] - Product remove sucessfull.");
         return productGateway.remove(productDB);
+    }
+
+    @Override
+    public ProductDto findById(UUID id) throws ProductNotFoundException {
+        return ProductDto.toDto(productGateway.findById(id));
     }
 }

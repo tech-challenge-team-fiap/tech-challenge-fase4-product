@@ -2,6 +2,7 @@ package br.com.fiap.techchallengeproduct.adapter.gateways;
 
 import br.com.fiap.techchallengeproduct.application.dto.product.ProductDto;
 import br.com.fiap.techchallengeproduct.domain.exception.products.InvalidProductsProcessException;
+import br.com.fiap.techchallengeproduct.domain.exception.products.ProductNotFoundException;
 import br.com.fiap.techchallengeproduct.domain.model.Product;
 import br.com.fiap.techchallengeproduct.external.infrastructure.entities.ProductDB;
 
@@ -20,5 +21,5 @@ public interface ProductGatewayInterface {
 
     List<ProductDB> findAll();
 
-    ProductDB findById(UUID id);
+    ProductDB findById(UUID id) throws ProductNotFoundException;
 }
