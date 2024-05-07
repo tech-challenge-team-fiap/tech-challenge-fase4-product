@@ -74,7 +74,7 @@ resource "aws_ecr_repository" "tech-challenge" {
 
 #ECS Setting
 locals {
-  split_endpoint = element(split(":", aws_db_instance.db.endpoint), 0)
+  split_endpoint = element(split(":", aws_db_instance.db_product.endpoint), 0)
 }
 
 resource "aws_ecs_cluster" "tech_challenge_cluster" {
@@ -104,11 +104,11 @@ resource "aws_ecs_task_definition" "tech_challenge_product_task" {
         ],
         environment = [
           { name = "PORT", value = "8080" },
-          { name = "DB_NAME", value = aws_db_instance.db.db_name },
+          { name = "DB_NAME", value = aws_db_instance.db_product.db_name },
           { name = "DB_HOST", value = local.split_endpoint },
-          { name = "DB_PORT", value = "${tostring(aws_db_instance.db.port)}" },
-          { name = "DB_USERNAME", value = aws_db_instance.db.username },
-          { name = "DB_PASSWORD", value = "${aws_db_instance.db.username}-password" },
+          { name = "DB_PORT", value = "${tostring(aws_db_instance.db_product.port)}" },
+          { name = "DB_USERNAME", value = aws_db_instance.db_product.username },
+          { name = "DB_PASSWORD", value = "${aws_db_instance.db_product.username}-password" },
           { name = "NODE_ENV", value = "dev" },
 
         ]
@@ -120,7 +120,7 @@ resource "aws_ecs_task_definition" "tech_challenge_product_task" {
 resource "aws_ecs_service" "tech_challenge_service" {
   name            = "tech-challenge-service"
   cluster         = aws_ecs_cluster.tech_challenge_cluster.id
-  task_definition = aws_ecs_task_definition.tech_challenge_task.arn
+  task_definition = aws_ecs_task_definition.tech_challenge_product_task.arn
   launch_type     = "FARGATE"
 
   network_configuration {
