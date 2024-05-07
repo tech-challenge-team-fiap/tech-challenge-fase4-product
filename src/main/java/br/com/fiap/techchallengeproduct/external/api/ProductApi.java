@@ -43,6 +43,12 @@ public class ProductApi {
         return productController.findByProductType(productType);
     }
 
+    @GetMapping("/{id}")
+    @Transactional
+    public ResponseEntity<?> findById(@PathVariable("id") UUID id) {
+        return productController.findById(id);
+    }
+
     @GetMapping
     @Transactional
     public ResponseEntity<?> findAll() {

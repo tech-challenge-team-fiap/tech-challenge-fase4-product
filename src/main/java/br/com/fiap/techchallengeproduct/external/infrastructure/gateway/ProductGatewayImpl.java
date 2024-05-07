@@ -6,6 +6,7 @@ import br.com.fiap.techchallengeproduct.domain.enums.TypeProduct;
 import br.com.fiap.techchallengeproduct.domain.enums.TypeStatus;
 import br.com.fiap.techchallengeproduct.domain.exception.products.InvalidProductTypeException;
 import br.com.fiap.techchallengeproduct.domain.exception.products.InvalidProductsProcessException;
+import br.com.fiap.techchallengeproduct.domain.exception.products.ProductNotFoundException;
 import br.com.fiap.techchallengeproduct.domain.model.Product;
 import br.com.fiap.techchallengeproduct.external.infrastructure.entities.ProductDB;
 import br.com.fiap.techchallengeproduct.external.infrastructure.repositories.ProductRepository;
@@ -38,6 +39,7 @@ public class ProductGatewayImpl implements ProductGatewayInterface {
             throw new RuntimeException(ex);
         }
     }
+
     private TypeProduct typeProduct(String type) {
         try {
             return TypeProduct.valueOf(type);
@@ -70,7 +72,7 @@ public class ProductGatewayImpl implements ProductGatewayInterface {
     }
 
     @Override
-    public ProductDB findById(UUID id) {
-        return productRepository.findAllById(id);
+    public ProductDB findById(UUID id) throws ProductNotFoundException {
+        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
     }
 }

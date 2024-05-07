@@ -18,7 +18,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductDto {
 
-    private String id;
+    private UUID id;
     private String name;
     private String description;
     private Integer quantity;
@@ -27,7 +27,8 @@ public class ProductDto {
     private TypeStatus typeStatus;
     private LocalDateTime dateRegister;
 
-    public ProductDto(String name, String description, Integer quantity, TypeProduct typeProduct, BigDecimal price, TypeStatus typeStatus, LocalDateTime dateRegister) {
+    public ProductDto(UUID id, String name, String description, Integer quantity, TypeProduct typeProduct, BigDecimal price, TypeStatus typeStatus, LocalDateTime dateRegister) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.quantity = quantity;
@@ -38,10 +39,10 @@ public class ProductDto {
     }
 
     public ProductDto(UUID id){
-        this.id = id.toString();
+        this.id = id;
     }
 
     public static ProductDto toDto(ProductDB product) {
-        return new ProductDto(product.getName(),product.getDescription(),product.getQuantity(),product.getTypeProduct(),product.getPrice(),product.getTypeStatus(),product.getDateRegister());
+        return new ProductDto(product.getId(), product.getName(),product.getDescription(),product.getQuantity(),product.getTypeProduct(),product.getPrice(),product.getTypeStatus(),product.getDateRegister());
     }
 }

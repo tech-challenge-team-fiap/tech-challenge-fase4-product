@@ -14,7 +14,7 @@ services:
     volumes:
       - ~/mysql/mysql:/var/lib/mysql
 
-  spring-app:
+  product-app:
     build:
       context: ./
       dockerfile: Dockerfile
