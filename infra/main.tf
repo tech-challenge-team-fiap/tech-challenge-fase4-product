@@ -61,7 +61,7 @@ resource "aws_db_instance" "db_product" {
 
 #ECR Setting
 resource "aws_ecr_repository" "tech-challenge" {
-  name                 = "tech-challenge"
+  name                 = "tech-challenge-product"
   image_tag_mutability = "MUTABLE"
   force_delete         = true
 
