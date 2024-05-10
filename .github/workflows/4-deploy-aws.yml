@@ -30,7 +30,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Find directory
-        run: ls
+        run: ls && pwd
 
       - name: Deploy AWS
         run: |
