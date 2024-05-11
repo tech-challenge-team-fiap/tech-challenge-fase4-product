@@ -43,6 +43,7 @@ jobs:
       - name: Deploy realizado com sucesso
         if: success()
         run: echo 'Deployment successful!'
+        
   # destroy:
   #   needs: build_aws
   #   runs-on: ubuntu-latest
