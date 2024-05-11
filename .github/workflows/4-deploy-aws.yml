@@ -44,34 +44,34 @@ jobs:
         if: success()
         run: echo 'Deployment successful!'
         
-  # destroy:
-  #   needs: build_aws
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: ./
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
+  destroy:
+    needs: build_aws
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-  #     - name: Configuration AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v2
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: ${{ secrets.AWS_REGION }}
+      - name: Configuration AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-  #     - name: Find directory
-  #       run: ls && pwd
+      - name: Find directory
+        run: ls && pwd
 
-  #     - name: Destroyed na AWS
-  #       run: |
-  #         pwd
-  #         whoami
-  #         ls -al
-  #         chmod +x ./destroy.sh
-  #         ./destroy.sh
+      - name: Destroyed na AWS
+        run: |
+          pwd
+          whoami
+          ls -al
+          chmod +x ./destroy.sh
+          ./destroy.sh
 
-  #     - name: Destroyed realizado com sucesso
-  #       if: success()
-  #       run: echo 'Destroyed successful!'
+      - name: Destroyed realizado com sucesso
+        if: success()
+        run: echo 'Destroyed successful!'
