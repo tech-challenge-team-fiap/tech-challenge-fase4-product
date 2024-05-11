@@ -47,8 +47,8 @@ module "main_vpc" {
 resource "aws_db_instance" "db_product" {
   identifier           = "tech-challenge-product-db"
   engine               = "mysql"
-  engine_version       = "8.0.11"
-  instance_class       = "db.t2.micro"
+  engine_version       = "8.0"
+  instance_class       = "db.t3.micro"
   allocated_storage    = 10
   db_name              = "tech_challenge_product_db"
   username             = "tech_challenge"
