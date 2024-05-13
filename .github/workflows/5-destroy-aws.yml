@@ -1,19 +1,16 @@
-name: Build and Deploy AWS
+name: Destroy Infra terraform AWS
 
 on:
   push:
     branches:
-      - main
+      - master
       - develop
       - feature/*
   pull_request:
     branches:
-      - main
+      - master
       - develop
-  workflow_run:
-    workflows: [ "Docker Build And Deploy to AWS ECR" ]
-    types:
-      - completed
+      - feature/*
 
 jobs:
   build_aws:
@@ -24,11 +21,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-      - name: Check status workflow previous
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
-        run: echo "Worflow are sucess, next task"
-      - name: Other taks
-        run: echo "Starting next task"
+
       - name: Configuration AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -39,14 +32,14 @@ jobs:
       - name: Find directory
         run: ls
 
-      - name: Deploy AWS
+      - name: Destroy AWS
         run: |
           pwd
           whoami
           ls -al
-          chmod +x ./deploy.sh
-          ./deploy.sh
+          chmod +x ./destroy.sh
+          ./destroy.sh
 
-      - name: Deploy realizado com sucesso
+      - name: Destroy realizado com sucesso
         if: success()
-        run: echo 'Deployment successful!'
+        run: echo 'Destroy successful!'

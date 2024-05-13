@@ -5,43 +5,18 @@ terraform {
       version = "5.40.0"
     }
   }
+
+  required_version = ">= 1.0.0"
 }
 
-provider "aws" {
-  region = "us-east-2"
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
+#ECS Setting
+resource "aws_ecs_cluster" "tc_ms_product_cluster" {
+  name = "tc-ms-product-cluster"
 }
-
-#VPC Setting
-module "main_vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "5.5.3"
-
-  name            = "main_vpc"
-  cidr            = "10.0.0.0/16"
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
-  azs             = ["us-east-2a", "us-east-2b", "us-east-2c"]
-
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
-  enable_dns_hostnames = true
-
-  tags = {
-    "kubernets.io/cluster/main-vpc" = "shared"
-  }
-
-  public_subnet_tags = {
-    "kubernets.io/cluster/main-vpc" = "shared"
-    "kubernets.io/role/elb"         = 1
-  }
-
-  private_subnet_tags = {
-    "kubernets.io/cluster/main-vpc"  = "shared"
-    "kubernets.io/role/internal-elb" = 1
-  }
-
-}
-#VPC Setting
+#ECS Setting
 
 #DB Setting
 resource "aws_db_instance" "db_product" {
@@ -59,42 +34,26 @@ resource "aws_db_instance" "db_product" {
 }
 #DB Setting
 
-#ECR Setting
-resource "aws_ecr_repository" "tech-challenge" {
-  name                 = "tech-challenge-product"
-  image_tag_mutability = "MUTABLE"
-  force_delete         = true
-
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-}
-#ECR Setting
-
 #ECS Setting
 locals {
   split_endpoint = element(split(":", aws_db_instance.db_product.endpoint), 0)
 }
 
-resource "aws_ecs_cluster" "tech_challenge_cluster" {
-  name = "tech_challenge_cluster"
-}
-
 resource "aws_ecs_task_definition" "tech_challenge_product_task" {
-  family                   = "tech_challenge_product_task"
+  family                   = "tc-ms-product-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  cpu                      = "512"
+  memory                   = "1024"
 
   container_definitions = jsonencode(
     [
       {
-        name : "tech-challenge-product-container",
-        image : "tech-challenge-product:latest",
-        cpu : 256,
-        memory : 512,
+        name      = "ts-ms-product-container"
+        image     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/tc-ms-product:latest"
+        cpu : 512,
+        memory : 1024,
         essential : true,
         portMappings : [
           {
@@ -117,15 +76,42 @@ resource "aws_ecs_task_definition" "tech_challenge_product_task" {
   )
 }
 
-resource "aws_ecs_service" "tech_challenge_service" {
-  name            = "tech-challenge-service"
-  cluster         = aws_ecs_cluster.tech_challenge_cluster.id
-  task_definition = aws_ecs_task_definition.tech_challenge_product_task.arn
-  launch_type     = "FARGATE"
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecs_task_execution_role"
 
-  network_configuration {
-    subnets         = module.main_vpc.private_subnets
-    security_groups = [module.main_vpc.default_security_group_id]
-  }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+        Effect = "Allow"
+      },
+    ]
+  })
 }
 #ECS Setting
+
+resource "aws_security_group" "tc_ms_product_sg" {
+  name        = "tc-ms-product-sg"
+  description = "Allow all inbound traffic"
+  vpc_id      = "vpc-0bd1f59a1daae83c1"  # Consider dynamic retrieval
+
+  ingress {
+    description      = "Allow all inbound traffic"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description      = "Allow all outbound traffic"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+}
