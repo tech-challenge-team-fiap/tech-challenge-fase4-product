@@ -39,7 +39,7 @@ locals {
   split_endpoint = element(split(":", aws_db_instance.db_product.endpoint), 0)
 }
 
-resource "aws_ecs_task_definition" "tech_challenge_product_task" {
+resource "aws_ecs_task_definition" "tc_ms_product_task" {
   family                   = "tc-ms-product-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -55,10 +55,16 @@ resource "aws_ecs_task_definition" "tech_challenge_product_task" {
         cpu : 512,
         memory : 1024,
         essential : true,
-        portMappings : [
+        portMappings = [
           {
-            containerPort : 8080,
-            hostPort : 8080
+            containerPort = 80
+            hostPort      = 80
+            protocol      = "tcp"
+          },
+          {
+            containerPort = 8080
+            hostPort      = 8080
+            protocol      = "tcp"
           }
         ],
         environment = [
@@ -99,6 +105,21 @@ resource "aws_iam_role" "ecs_execution_role" {
 }
 
 #ECS Setting
+
+# ECS SERVICE
+resource "aws_ecs_service" "tc_ms_product_service" {
+  name            = "tc-ms-product-service"
+  cluster         = aws_ecs_cluster.tc_ms_product_cluster.id
+  task_definition = aws_ecs_task_definition.tc_ms_product_task.arn
+  launch_type     = "FARGATE"
+  desired_count   =  2
+
+  network_configuration {
+    subnets          = ["subnet-04715a6b7400f9757", "subnet-06f39bcc16f6bd4ce", "subnet-010e2a0f51a3d00bc"]
+    security_groups  = [aws_security_group.tc_ms_product_sg.id]
+    assign_public_ip = true
+  }
+}
 
 resource "aws_security_group" "tc_ms_product_sg" {
   name        = "tc-ms-product-sg"
