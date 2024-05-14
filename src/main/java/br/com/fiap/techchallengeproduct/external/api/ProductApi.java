@@ -21,6 +21,11 @@ public class ProductApi {
         this.productController = productController;
     }
 
+    @GetMapping("check")
+    public ResponseEntity<?> healthCheckApi(){
+        return ResponseEntity.ok("Api Product UP");
+    }
+
     @PostMapping
     @Transactional
     public ResponseEntity<?> register(@RequestBody ProductFormDto productFormDto) {
