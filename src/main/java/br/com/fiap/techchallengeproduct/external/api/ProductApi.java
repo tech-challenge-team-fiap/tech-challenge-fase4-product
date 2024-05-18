@@ -21,7 +21,7 @@ public class ProductApi {
         this.productController = productController;
     }
 
-    @GetMapping("check")
+    @GetMapping("/check")
     public ResponseEntity<?> healthCheckApi(){
         return ResponseEntity.ok("Api Product UP");
     }

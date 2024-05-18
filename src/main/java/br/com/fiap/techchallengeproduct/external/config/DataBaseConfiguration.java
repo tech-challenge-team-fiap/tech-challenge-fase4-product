@@ -3,10 +3,9 @@ package br.com.fiap.techchallengeproduct.external.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
 @Configuration
 public class DataBaseConfiguration {
@@ -21,14 +20,13 @@ public class DataBaseConfiguration {
     private String password;
 
     @Bean
-    public void connect() {
-        System.out.println("Connecting database...");
-
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            System.out.println("Database connected!");
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setUrl(url);
+        dataSource.setUsername(user);
+        dataSource.setPassword(password);
+        return dataSource;
     }
 
 }
