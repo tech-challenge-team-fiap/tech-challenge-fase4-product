@@ -28,6 +28,9 @@
 		<mockserver.verion>5.11.2</mockserver.verion>
 		<sonar.organization>tech-challenge-team-fiap</sonar.organization>
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.coverage.jacoco.xmlReportPaths>
+    			../target/site/jacoco/jacoco.xml
+  		</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
 
 	<dependencies>
@@ -136,6 +139,12 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
+		<dependency>
+    			<groupId>org.jacoco</groupId>
+    			<artifactId>jacoco-maven-plugin</artifactId>
+    			<version>0.8.12</version>
+		</dependency>
 	</dependencies>
 
 	<profiles>
@@ -157,6 +166,33 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+                		<groupId>org.jacoco</groupId>
+                		<artifactId>jacoco-maven-plugin</artifactId>
+                		<version>0.8.7</version>
+                		<executions>
+                   			 <execution>
+                        			<id>prepare-agent</id>
+                        			<goals>
+                            				<goal>prepare-agent</goal>
+                        			</goals>
+                    			</execution>
+                    			<execution>
+                        			<id>report</id>
+                        			<goals>
+                            				<goal>report</goal>
+                        			</goals>
+                        			<configuration>
+                            				<formats>
+                                				<format>XML</format>
+                            				</formats>
+							<excludes>
+								
+							</excludes>
+                        			</configuration>
+                    			</execution>
+                		</executions>
+            		</plugin>
 		</plugins>
 		<finalName>tech-challenge-product-docker</finalName>
 	</build>
