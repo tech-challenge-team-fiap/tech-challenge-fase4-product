@@ -187,7 +187,9 @@
                                 				<format>XML</format>
                             				</formats>
 							<excludes>
-								
+								<exclude>**/external/config/*</exclude>
+								<exclude>**/domain/type/*</exclude>
+								<exclude>**/techchallengeproduct/TechChallengeProductApplication.java</exclude>
 							</excludes>
                         			</configuration>
                     			</execution>
